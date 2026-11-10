@@ -453,8 +453,8 @@
               <iframe 
                 id="mainVideoPlayer" 
                 class="absolute inset-0 w-full h-full" 
-                src="https://www.youtube-nocookie.com/embed/_n5u4gMsnao?autoplay=0&rel=0" 
-                title="Presence of Jesus Recent Service" 
+                src="https://www.youtube-nocookie.com/embed/videoseries?list=UUwyS65D3OE5JgkhzRTj7Lhg&rel=0" 
+                title="Latest uploads from Presence of Jesus Ministry" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen
@@ -462,9 +462,9 @@
             </div>
             <div class="p-6 bg-slate-950 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span class="text-amber-400 text-xs font-bold uppercase tracking-wider">Now Playing: Latest Sunday Service</span>
+                <span class="text-amber-400 text-xs font-bold uppercase tracking-wider">Latest Uploads from Our YouTube Channel</span>
                 <h3 id="currentVideoTitle" class="font-serif text-lg sm:text-xl font-bold mt-0.5">
-                  எல்லைக்குள் வாழ்வோம் | Sunday Service | Pr. T. Inbakumar | Peikulam Church
+                  Watch the latest worship services and messages from Presence of Jesus Ministry
                 </h3>
                 <p class="text-xs text-slate-400 mt-1">Live from Peikulam Sanctuary • Presence Of Jesus Ministry</p>
               </div>
@@ -2072,10 +2072,14 @@
       if (form) openPrayerRequestInWhatsApp(form);
     }
 
-    // Live YouTube RSS loading is paused until the ministry's canonical
-    // channel ID is verified. Existing curated videos remain available.
+    // YouTube maintains an automatic "Uploads" playlist for every channel.
+    // The featured player embeds that playlist, so new uploads appear without
+    // an API key, RSS proxy, or manual website edits.
     async function loadLatestYouTubeVideos() {
-      return;
+      const player = document.getElementById('mainVideoPlayer');
+      if (!player) return;
+      player.src = 'https://www.youtube-nocookie.com/embed/videoseries?list=UUwyS65D3OE5JgkhzRTj7Lhg&rel=0';
+      player.title = 'Latest uploads from Presence of Jesus Ministry';
     }
 
     // Initialize Default State
