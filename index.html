@@ -1924,7 +1924,7 @@
     };
 
     function navigateFromHash() {
-      const hash = window.location.hash.replace(/^#\\/?/, '');
+      const hash = window.location.hash.replace(/^#\/?/, '');
       const cleanKey = hash.split('/').filter(Boolean).pop() || 'home';
       navigate(routeLookup[cleanKey] || 'home');
     }
