@@ -1436,7 +1436,7 @@
             </form>
 
             <div id="prayerSuccessBox" class="hidden mt-5 p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-sm">
-              <strong>Request Received!</strong> Pastor Inbakumar and our prayer intercessors are upholding you in prayer.
+              <strong>WhatsApp handoff.</strong> Your request is prepared in WhatsApp. Please press Send there to deliver it to the ministry. It is not submitted until you send it.
             </div>
           </div>
 
@@ -1910,34 +1910,35 @@
       });
     }
 
-    // Hash change handler for browser back/forward buttons
-    window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.replace('#/', '');
-      const cleanKey = hash.split('/')[hash.split('/').length - 1] || 'home';
-      
-      const routeLookup = {
-        '': 'home',
-        'home': 'home',
-        'about-ministry': 'about-ministry',
-        'about-pastor': 'about-pastor',
-        'ministries': 'ministries',
-        'church': 'min-church',
-        'children': 'min-children',
-        'youth': 'min-youth',
-        'mens-prayer': 'min-men',
-        'womens-prayer': 'min-women',
-        'village-gospel': 'min-village',
-        'good-news-festival': 'min-festival',
-        'new-year-blessing': 'min-newyear',
-        'media': 'min-media',
-        'missionary': 'min-missionary',
-        'prayer-request': 'prayer-request',
-        'donate': 'donate',
-        'contact': 'contact'
-      };
+    // Resolve the current URL hash for direct links and browser back/forward navigation.
+    const routeLookup = {
+      '': 'home',
+      'home': 'home',
+      'about-ministry': 'about-ministry',
+      'about-pastor': 'about-pastor',
+      'ministries': 'ministries',
+      'church': 'min-church',
+      'children': 'min-children',
+      'youth': 'min-youth',
+      'mens-prayer': 'min-men',
+      'womens-prayer': 'min-women',
+      'village-gospel': 'min-village',
+      'good-news-festival': 'min-festival',
+      'new-year-blessing': 'min-newyear',
+      'media': 'min-media',
+      'missionary': 'min-missionary',
+      'prayer-request': 'prayer-request',
+      'donate': 'donate',
+      'contact': 'contact'
+    };
 
+    function navigateFromHash() {
+      const hash = window.location.hash.replace(/^#\\/?/, '');
+      const cleanKey = hash.split('/').filter(Boolean).pop() || 'home';
       navigate(routeLookup[cleanKey] || 'home');
-    });
+    }
+
+    window.addEventListener('hashchange', navigateFromHash);
 
     // Mobile drawer toggle
     function toggleMobileMenu() {
@@ -2026,59 +2027,25 @@
       }, 3000);
     }
 
-    function handlePrayerSubmit(e) {
-      e.preventDefault();
-      document.getElementById('prayerSuccessBox').classList.remove('hidden');
-      showToast('Prayer request submitted to Pastor!');
-      e.target.reset();
-    }
+    function openPrayerRequestInWhatsApp(form) {
+      if (!form.reportValidity()) return;
 
-    function sendViaWhatsApp() {
-      const text = encodeURIComponent("Praise the Lord Pastor Inbakumar, I would like to submit a prayer request for Presence of Jesus Ministry.");
-      window.open(`https://wa.me/919486373603?text=${text}`, '_blank');
-    }
-
-    // Dynamic Latest YouTube Videos Loader
-    // Uses YouTube's public feed with RSS to fetch latest channel videos; falls back gracefully to latest verified sermons
+      const values = new FormData(form);
+      const category = form.elements.category.selectedOptions[0]?.textContent || '';
+      const message = [
+        'Praise the Lord Pastor Inbakumar,',
+        'I would like to share a prayer request with Presence of Jesus Ministry.',
+        '',
+        `Name: ${values.get('name')}`,
+        `Phone: ${values.get('phone')}`,
+     // Live YouTube RSS loading is intentionally paused until the ministry's
+    // canonical channel ID is verified. The curated video links already in the
+    // page remain available and are not replaced with unverified feed results.
     async function loadLatestYouTubeVideos() {
-      const channelId = 'PresenceOfJesus'; // Channel handle @PresenceOfJesus
-      const feedUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://www.youtube.com/feeds/videos.xml?channel_id=UC_presenceofjesus_feed')}`;
+      return;
+    }
 
-      // Verified latest channel uploads from Presence of Jesus Ministry / Pr. T. Inbakumar
-      const verifiedSermons = [
-        {
-          id: '_n5u4gMsnao',
-          title: 'எல்லைக்குள் வாழ்வோம் | Sunday Service | Pr. T. Inbakumar | Peikulam Church',
-          category: 'Sunday Holy Worship',
-          duration: 'Sunday Service'
-        },
-        {
-          id: 'SXDUoYO8wPY',
-          title: 'துதி ஆராதனை | Praise & Worship | Youth Fest | Presence Of Jesus Ministries',
-          category: 'Praise & Worship',
-          duration: 'Live Worship'
-        },
-        {
-          id: '0cGNoTVjno0',
-          title: 'கேள்வியும் - பதிலும் | Question & Answer | Presence Of Jesus Ministry',
-          category: 'Biblical Counsel',
-          duration: 'Q & A'
-        },
-        {
-          id: 'tAORPSE1-5A',
-          title: 'ஒட்டிக்கொள்ளாதே | Don\'t Cling | Sunday Message | Peikulam Church',
-          category: 'Spiritual Word',
-          duration: 'Sermon'
-        },
-        {
-          id: 'n-hEJPxulNs',
-          title: 'பரிசுத்த பவுலின் பரலோக பயணங்கள் | Pr. T. Inbakumar | Peikulam Church',
-          category: 'Bible Teaching',
-          duration: 'Bible Study'
-        },
-        {
-          id: 'cRfcEkH6U5Y',
-          title: 'இருந்துவிடாதே | Sunday Service | Presence Of Jesus Ministries',
+ | Presence Of Jesus Ministries',
           category: 'Sunday Service',
           duration: 'Sunday Service'
         }
@@ -2108,7 +2075,7 @@
 
     // Initialize Default State
     window.addEventListener('DOMContentLoaded', () => {
-      navigate('home');
+      navigateFromHash();
       startHomeCarousel();
       startMinistryCarousels();
       loadLatestYouTubeVideos();
