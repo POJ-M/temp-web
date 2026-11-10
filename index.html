@@ -1912,24 +1912,15 @@
 
     // Resolve the current URL hash for direct links and browser back/forward navigation.
     const routeLookup = {
-      '': 'home',
-      'home': 'home',
-      'about-ministry': 'about-ministry',
-      'about-pastor': 'about-pastor',
-      'ministries': 'ministries',
-      'church': 'min-church',
-      'children': 'min-children',
-      'youth': 'min-youth',
-      'mens-prayer': 'min-men',
-      'womens-prayer': 'min-women',
-      'village-gospel': 'min-village',
-      'good-news-festival': 'min-festival',
-      'new-year-blessing': 'min-newyear',
-      'media': 'min-media',
-      'missionary': 'min-missionary',
-      'prayer-request': 'prayer-request',
-      'donate': 'donate',
-      'contact': 'contact'
+      '': 'home', 'home': 'home',
+      'about-ministry': 'about-ministry', 'about-pastor': 'about-pastor',
+      'ministries': 'ministries', 'church': 'min-church',
+      'children': 'min-children', 'youth': 'min-youth',
+      'mens-prayer': 'min-men', 'womens-prayer': 'min-women',
+      'village-gospel': 'min-village', 'good-news-festival': 'min-festival',
+      'new-year-blessing': 'min-newyear', 'media': 'min-media',
+      'missionary': 'min-missionary', 'prayer-request': 'prayer-request',
+      'donate': 'donate', 'contact': 'contact'
     };
 
     function navigateFromHash() {
@@ -2029,7 +2020,6 @@
 
     function openPrayerRequestInWhatsApp(form) {
       if (!form.reportValidity()) return;
-
       const values = new FormData(form);
       const category = form.elements.category.selectedOptions[0]?.textContent || '';
       const message = [
@@ -2038,39 +2028,33 @@
         '',
         `Name: ${values.get('name')}`,
         `Phone: ${values.get('phone')}`,
-     // Live YouTube RSS loading is intentionally paused until the ministry's
-    // canonical channel ID is verified. The curated video links already in the
-    // page remain available and are not replaced with unverified feed results.
-    async function loadLatestYouTubeVideos() {
-      return;
+        `Village / City: ${values.get('city')}`,
+        `Prayer Category: ${category}`,
+        `Prayer Need: ${values.get('message')}`
+      ].join('\\n');
+      const whatsappUrl = `https://wa.me/919486373603?text=${encodeURIComponent(message)}`;
+      const openedWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      const statusBox = document.getElementById('prayerSuccessBox');
+      statusBox.textContent = openedWindow
+        ? 'WhatsApp has opened with your prayer request. Please press Send in WhatsApp to deliver it to the ministry. Your request has not been sent yet.'
+        : 'Your browser blocked the WhatsApp window. Please allow pop-ups or use the WhatsApp Direct button. Your request has not been sent.';
+      statusBox.classList.remove('hidden');
     }
 
- | Presence Of Jesus Ministries',
-          category: 'Sunday Service',
-          duration: 'Sunday Service'
-        }
-      ];
+    function handlePrayerSubmit(e) {
+      e.preventDefault();
+      openPrayerRequestInWhatsApp(e.currentTarget);
+    }
 
-      try {
-        // Attempt feed fetch via RSS to check if live/new upload is present
-        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.youtube.com%2Ffeeds%2Fvideos.xml%3Fchannel_id%3DUC-PresenceOfJesus`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.items && data.items.length > 0) {
-            const first = data.items[0];
-            const videoId = first.link.split('v=')[1];
-            if (videoId) {
-              const player = document.getElementById('mainVideoPlayer');
-              const titleElem = document.getElementById('currentVideoTitle');
-              if (player) player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0`;
-              if (titleElem) titleElem.textContent = first.title;
-            }
-          }
-        }
-      } catch (err) {
-        // Default verified sermons remain perfectly in place
-        console.log('Using verified channel uploads:', err);
-      }
+    function sendViaWhatsApp() {
+      const form = document.getElementById('prayerForm');
+      if (form) openPrayerRequestInWhatsApp(form);
+    }
+
+    // Live YouTube RSS loading is paused until the ministry's canonical
+    // channel ID is verified. Existing curated videos remain available.
+    async function loadLatestYouTubeVideos() {
+      return;
     }
 
     // Initialize Default State
